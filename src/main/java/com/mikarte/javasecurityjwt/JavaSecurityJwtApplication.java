@@ -1,13 +1,13 @@
-package com.mikarte.javadevelopertest;
+package com.mikarte.javasecurityjwt;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JavaDeveloperTestApplication {
+public class JavaSecurityJwtApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(JavaDeveloperTestApplication.class, args);
+		SpringApplication.run(JavaSecurityJwtApplication.class, args);
 	}
 
 }
