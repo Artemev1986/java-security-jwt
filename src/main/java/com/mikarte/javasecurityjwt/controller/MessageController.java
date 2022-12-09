@@ -1,6 +1,6 @@
 package com.mikarte.javasecurityjwt.controller;
 
-import com.mikarte.javasecurityjwt.config.JwtUtil;
+import com.mikarte.javasecurityjwt.jwt.JwtUtil;
 import com.mikarte.javasecurityjwt.exception.ForbiddenException;
 import com.mikarte.javasecurityjwt.model.Message;
 import com.mikarte.javasecurityjwt.service.MessageService;
@@ -22,13 +22,17 @@ import java.util.List;
 public class MessageController {
 
     private final MessageService messageService;
-    private final JwtUtil jwtProvider;
+    private final JwtUtil jwtUtil;
     private static final String AUTHORIZATION = "Authorization";
 
     @PostMapping("/messages")
-    public ResponseEntity<Object> addMessage(@RequestHeader(AUTHORIZATION) String token,
+    public ResponseEntity<Object> addMessage(@RequestHeader(AUTHORIZATION) String bearerToken,
                                              @RequestBody @Valid Message newMessage) {
-        String name = jwtProvider.getLoginFromToken(token.substring(7));
+        String token = bearerToken.substring(7);
+        if (!jwtUtil.validateToken(token)) {
+            throw new ForbiddenException("Token not valid");
+        }
+        String name = jwtUtil.getNameFromToken(token);
         if (!name.equals(newMessage.getName())) {
             throw new ForbiddenException("The name from the requestBody does not match the name from the token");
         }

@@ -1,15 +1,11 @@
 package com.mikarte.javasecurityjwt.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Table(name = "messages")
 public class Message {

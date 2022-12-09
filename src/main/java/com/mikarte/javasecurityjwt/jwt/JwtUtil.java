@@ -1,11 +1,9 @@
-package com.mikarte.javasecurityjwt.config;
+package com.mikarte.javasecurityjwt.jwt;
 
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Component
 @Slf4j
@@ -14,28 +12,33 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    public String generateToken(String login) {
+    public String generateToken(String name) {
         return Jwts.builder()
-                .setSubject(login)
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setSubject(name)
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
+
     }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
-        } catch (SignatureException e) {
+        } catch (ExpiredJwtException expEx) {
+            log.error("Token expired");
+        } catch (UnsupportedJwtException unsEx) {
+            log.error("Unsupported jwt");
+        } catch (MalformedJwtException mjEx) {
+            log.error("Malformed jwt");
+        } catch (SignatureException sEx) {
+            log.error("Invalid signature");
+        } catch (Exception e) {
             log.error("invalid token");
-            return false;
-        } catch (ExpiredJwtException e) {
-            log.error("token expired");
-            return false;
         }
+        return false;
     }
 
-    public String getLoginFromToken(String token) {
+    public String getNameFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         return claims.getSubject();
     }

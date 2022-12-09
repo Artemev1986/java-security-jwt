@@ -1,9 +1,10 @@
 package com.mikarte.javasecurityjwt.service;
 
+import com.mikarte.javasecurityjwt.dto.UserDto;
+import com.mikarte.javasecurityjwt.mapper.UserMapper;
 import com.mikarte.javasecurityjwt.model.User;
 import com.mikarte.javasecurityjwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -13,11 +14,10 @@ import javax.persistence.EntityNotFoundException;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
-    public void addUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+    public UserDto addUser(User user) {
+        user.setPassword(user.getPassword());
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
     public User findByName(String name) {
@@ -30,13 +30,10 @@ public class UserService {
 
     public User findByLoginAndPassword(String name, String password) {
         User user = findByName(name);
-        if (user != null) {
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                return user;
-            } else {
-                throw new EntityNotFoundException("There is no " + name + " in the database with this password");
-            }
+        if (password.equals(user.getPassword())) {
+            return user;
+        } else {
+            throw new EntityNotFoundException("There is no " + name + " in the database with this password");
         }
-        return null;
     }
 }

@@ -1,14 +1,10 @@
 package com.mikarte.javasecurityjwt.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Table(name = "users")
 public class User {

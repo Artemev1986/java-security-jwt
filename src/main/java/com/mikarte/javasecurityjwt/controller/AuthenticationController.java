@@ -1,10 +1,10 @@
 package com.mikarte.javasecurityjwt.controller;
 
-import com.mikarte.javasecurityjwt.config.JwtUtil;
+import com.mikarte.javasecurityjwt.jwt.JwtUtil;
 import com.mikarte.javasecurityjwt.dto.AuthenticationRequest;
 import com.mikarte.javasecurityjwt.dto.AuthenticationResponse;
 import com.mikarte.javasecurityjwt.dto.RegistrationRequest;
-import com.mikarte.javasecurityjwt.mapper.UserMapper;
+import com.mikarte.javasecurityjwt.dto.UserDto;
 import com.mikarte.javasecurityjwt.model.User;
 import com.mikarte.javasecurityjwt.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +21,21 @@ import javax.validation.Valid;
 public class AuthenticationController {
 
     private final UserService userService;
-
-    private final JwtUtil jwtProvider;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody @Valid RegistrationRequest registrationRequest) {
         User user = new User();
         user.setPassword(registrationRequest.getPassword());
         user.setName(registrationRequest.getName());
-        userService.addUser(user);
-        return new ResponseEntity<>(UserMapper.toUserDto(user), HttpStatus.CREATED);
+        UserDto userDto = userService.addUser(user);
+        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }
 
     @PostMapping("/authentication")
     public ResponseEntity<Object> authentication(@RequestBody @Valid AuthenticationRequest request) {
         User user = userService.findByLoginAndPassword(request.getName(), request.getPassword());
-        String token = jwtProvider.generateToken(user.getName());
+        String token = jwtUtil.generateToken(user.getName());
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
         authenticationResponse.setToken(token);
         return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
