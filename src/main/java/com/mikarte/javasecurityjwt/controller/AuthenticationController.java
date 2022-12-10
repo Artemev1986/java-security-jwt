@@ -16,13 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+/**
+ * API for working with users {@link User}, has fields:
+ * {@link AuthenticationController#userService},
+ * {@link AuthenticationController#jwtUtil}
+ */
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationController {
 
+    /**Users Service*/
     private final UserService userService;
+    /**Token Service*/
     private final JwtUtil jwtUtil;
 
+    /**
+     *New user registration
+     * @param registrationRequest {@link RegistrationRequest}
+     * @return {@link ResponseEntity}
+     */
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody @Valid RegistrationRequest registrationRequest) {
         User user = new User();
@@ -32,6 +44,11 @@ public class AuthenticationController {
         return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }
 
+    /**
+     *User authentication
+     * @param request {@link AuthenticationRequest}
+     * @return {@link ResponseEntity}
+     */
     @PostMapping("/authentication")
     public ResponseEntity<Object> authentication(@RequestBody @Valid AuthenticationRequest request) {
         User user = userService.findByLoginAndPassword(request.getName(), request.getPassword());

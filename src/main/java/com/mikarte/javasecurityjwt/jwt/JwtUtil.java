@@ -5,13 +5,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Class for working with a token, has field:
+ * {@link JwtUtil#jwtSecret}
+ */
 @Component
 @Slf4j
 public class JwtUtil {
 
+    /**Link to decryption key {@link String}*/
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    /**
+     * Generation token
+     * @param name {@link String}
+     * @return token {@link String}
+     */
     public String generateToken(String name) {
         return Jwts.builder()
                 .setSubject(name)
@@ -20,6 +30,11 @@ public class JwtUtil {
 
     }
 
+    /**
+     * Validation token
+     * @param token {@link String}
+     * @return true if valid, else false
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
@@ -38,6 +53,11 @@ public class JwtUtil {
         return false;
     }
 
+    /**
+     * Get name from token
+     * @param token {@link String}
+     * @return name {@link String}
+     */
     public String getNameFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         return claims.getSubject();
